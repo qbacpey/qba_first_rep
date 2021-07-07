@@ -6,24 +6,26 @@ public class Car {
     //投放日期
     private String date;
     //合作方
-    private Cooperator cooperate;
+    private Cooperator Cooperator;
     //日租金
     private double money;
     //车辆状态
     private cState state;
     //枚举类，用来枚举车辆的四种状态
+    private boolean askForFix;
+
     public enum cState {
         //空闲
         FREE ("空闲"){
             @Override
-            boolean isFree() {
+            public boolean isFree() {
                 return true;
             }
         },
         //使用中
         USING ("使用中"){
             @Override
-            boolean isUsing() {
+            public boolean isUsing() {
                 return true;
             }
 
@@ -31,7 +33,7 @@ public class Car {
         //维修中
         FIXING ("维修中"){
             @Override
-            boolean isFixing() {
+            public boolean isFixing() {
                 return true;
             }
 
@@ -39,7 +41,7 @@ public class Car {
         //报废
         TRASHED ("报废") {
             @Override
-            boolean isTrashed() {
+            public boolean isTrashed() {
                 return true;
             }
 
@@ -51,19 +53,19 @@ public class Car {
 
         String chinese;
 
-        boolean isFree() {
+        public boolean isFree() {
             return false;
         }
 
-        boolean isUsing() {
+        public boolean isUsing() {
             return false;
         }
 
-        boolean isFixing() {
+        public boolean isFixing() {
             return false;
         }
 
-        boolean isTrashed() {
+        public boolean isTrashed() {
             return false;
         }
 
@@ -77,8 +79,32 @@ public class Car {
         return ID;
     }
 
+    public boolean isAskForFix() {
+        return askForFix;
+    }
+
+    public void setAskForFix(boolean askForFix) {
+        this.askForFix = askForFix;
+    }
+
     public String getDate() {
         return date;
+    }
+
+    public void setCooperate(Cooperator cooperate) {
+        this.Cooperator = cooperate;
+    }
+
+    public void setMoney(double money) {
+        this.money = money;
+    }
+
+    public Cooperator getCooperate() {
+        return Cooperator;
+    }
+
+    public double getMoney() {
+        return money;
     }
 
     public void setDate(String date) {
@@ -101,7 +127,7 @@ public class Car {
         sb.append(",\"date\":\"")
                 .append(date).append('\"');
         sb.append(",\"cooperate\":")
-                .append(cooperate);
+                .append(Cooperator);
         sb.append(",\"state\":")
                 .append(state);
         sb.append('}');

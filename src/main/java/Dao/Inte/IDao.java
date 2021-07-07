@@ -1,15 +1,23 @@
-package Dao;
+package Dao.Inte;
 
 import java.util.Optional;
 
+/*
+ * 还是说应该在切实被实现的接口上在加注释？
+ */
+
 public interface IDao<T> {
-    //初始化内存数据库函数，用来导入本地JSON数据
-    void initData();
 
     /*
      * 根据给定的用户ID/车辆ID，删除指定对象
      */
     String del(int ID);
+
+    /*
+     *返回字符串，字符串所有车辆的数据
+     */
+
+    String scan();
 
     /*
      * 根据给定的用户ID/车辆ID，寻找指定对象
@@ -28,7 +36,7 @@ public interface IDao<T> {
     void saveData();
 
     /*
-     *返回字符串，字符串展示相关数据
+     * 展示所有Car的信息，不限运营商
      */
-    String scan();
+
 }

@@ -1,6 +1,6 @@
 package Dao.Impl;
 
-import Dao.IDao;
+import Dao.Inte.IDao_Car;
 import Document.Car;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,22 +11,45 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Car_Dao implements IDao<Car> {
-    //用来储存录像带信息，利用save函数时刻保存到硬盘中
+public class Dao_Car implements IDao_Car {
+    //用来储存未经分类的所有车的数据，利用save函数时刻保存到硬盘中
     private static ArrayList<Car> aData;
+    //用来储存经过分类的所有车的数据
+    private static Map<String, List<Car>> aProcessedData;
     private static ObjectMapper aObjectMapper = new ObjectMapper();
 
-    //初始化内存数据库函数，用来导入本地JSON数据
-    public void initData() {
+    /*
+     * 静态代码块，用来初始化Dao状态
+     * 一方面从文件中读取所有数据，将各个不同的车辆按照车辆的合作方进行分类
+     */
+    static {
         try {
             JavaType type = aObjectMapper.getTypeFactory().
                     constructCollectionType(ArrayList.class, Car.class);
             aData = aObjectMapper.readValue(Paths.get("Car.json").toFile(), type);
+            aProcessedData = aData.stream()
+                    .collect(Collectors.groupingBy(car -> car.getCooperate().getName()
+                            , Collectors.toList()));
         } catch (IOException e) {
             aData = new ArrayList<Car>();
         }
     }
 
+    private static IDao_Car aDao_Car;
+
+    private Dao_Car() {
+    }
+
+    ;
+
+    public static IDao_Car get() {
+        if (aDao_Car == null)
+            aDao_Car = new Dao_Car();
+        return aDao_Car;
+    }
+
+
+    @Override
     public void saveData() {
         try {
             aObjectMapper.writeValue(new File("Car.json"), aData);
@@ -39,7 +62,9 @@ public class Car_Dao implements IDao<Car> {
     public String scan() {
         return aData.stream()
                 .map(Car::toString)
-                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .collect(StringBuilder::new
+                        , StringBuilder::append
+                        , StringBuilder::append)
                 .toString();
     }
 
@@ -56,7 +81,28 @@ public class Car_Dao implements IDao<Car> {
 
     @Override
     public Optional<Car> search(int Id) {
-        return aData.stream().filter(Car -> Car.getID() == Id).findAny();
+        return aData.stream()
+                .filter(Car -> Car.getID() == Id)
+                .findAny();
+    }
+
+    @Override
+    public List<Car> searchMatchCooWorker(String name) {
+        return aProcessedData.get(name);
+    }
+
+    @Override
+    public Optional<Car> searchAnyMatchState(Car.cState state) {
+        return aData.stream()
+                .filter(e -> e.getState() == state)
+                .findAny();
+    }
+
+    @Override
+    public List<Car> searchAllMatch(Car.cState state) {
+        return aData.stream()
+                .filter(e -> e.getState() == state)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -64,10 +110,8 @@ public class Car_Dao implements IDao<Car> {
         aData.add(item);
     }
 
-    /*
-     * 此函数能返回一个String，用来展示所有不同状态的汽车的数量
-     */
 
+    @Override
     public String stateTable() {
         Map<Car.cState, Long> temp = aData.stream()
                 .collect(Collectors.groupingBy(Car::getState, Collectors.counting()));

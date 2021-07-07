@@ -15,9 +15,19 @@ public class User {
     private String date;
     //余额
     private double money;
+    //是否正在使用车
+    private boolean using;
 
     public int getId() {
         return id;
+    }
+
+    public boolean isUsing() {
+        return using;
+    }
+
+    public void setUsing(boolean using) {
+        this.using = using;
     }
 
     public void setId(int id) {
