@@ -1,11 +1,13 @@
 package Service.Impl;
 
-import Dao.Impl.Dao_User;
-import Dao.Inte.IDao;
+import Dao.Impl.DAOUserImpl;
+import Dao.Inte.IDAO;
 import Document.Car;
+import Document.Record;
 import Document.User;
-import Service.Inte.IService_Cooperator;
-import Service.Inte.IService_User;
+import Service.Inte.IServiceAdmin;
+import Service.Inte.IServiceCooperator;
+import Service.Inte.IServiceUser;
 
 import java.util.Optional;
 import java.util.Scanner;
@@ -15,36 +17,42 @@ import java.util.Scanner;
  * 如果有多个静态的初始化数据，就应该在初始化块中完成
  */
 
-public class Service_User implements IService_User {
+public class ServiceUserImpl implements IServiceUser {
 
     //储存User的一个对Dao的调用
-    private static IDao<User> aData;
+    private static IDAO<User> userIDAO;
     //储存一个对Service_Car的引用，不直接和Car_Dao交互,初始化的时候，所有的车都属于官方
-    private static IService_Cooperator aCooperator;
+    private static IServiceCooperator iServiceCooperator;
+    private static IServiceAdmin iServiceAdmin;
     //作为读取数据使用
     private static Scanner aScanner;
     //现在正在线上的用户
     private static User tUser;
 
+
     static {
-            aData = Dao_User.get();
-            aCooperator = Service_Cooperator.get();
-            aScanner = new Scanner(System.in);
+        userIDAO = DAOUserImpl.get();
+        iServiceCooperator = ServiceCooperatorImpl.get();
+        aScanner = new Scanner(System.in);
+        iServiceAdmin = ServiceAdminImpl.get();
     }
 
-    private static IService_User aService_User;
-    private Service_User(){}
-    public static IService_User get(){
-        if(aService_User==null)
-            aService_User = new Service_User();
+    private static IServiceUser aService_User;
+
+    private ServiceUserImpl() {
+    }
+
+    public static IServiceUser get() {
+        if (aService_User == null)
+            aService_User = new ServiceUserImpl();
         return aService_User;
     }
 
     @Override
-    public String res() {
+    public String register() {
         //初始化用户Id随机指定1-1000
         int tID = (int) (Math.random() * 1000);
-        while (aData.search(tID).isPresent())
+        while (userIDAO.getById(tID).isPresent())
             tID = (int) (Math.random() * 1000);
         try {
             System.out.println("请输入姓名");
@@ -60,6 +68,7 @@ public class Service_User implements IService_User {
             System.out.println("请输入余额：");
             double tMoney = aScanner.nextDouble();
             tUser = new User(tID, tName, tPhoneNumber, tPassWord, tIdentity, tData, tMoney);
+            userIDAO.add(tUser);
         } catch (Exception e) {
             tUser = null;
             return "用户格式输出错误";
@@ -68,7 +77,7 @@ public class Service_User implements IService_User {
     }
 
     @Override
-    public String log() {
+    public String login() {
         Optional<User> e;
 
         if (tUser != null) {
@@ -82,7 +91,7 @@ public class Service_User implements IService_User {
 
         try {
             System.out.println("请输入您的ID:");
-            if ((e = aData.search(aScanner.nextInt())).isPresent()) {
+            if ((e = userIDAO.getById(aScanner.nextInt())).isPresent()) {
                 System.out.println("请输入您的密码");
                 if (e.get().getPassword().equals(aScanner.next())) {
                     tUser = e.get();
@@ -99,7 +108,7 @@ public class Service_User implements IService_User {
     }
 
     @Override
-    public String del() {
+    public String delete() {
         return "您没有权限进行此操作";
     }
 
@@ -124,22 +133,29 @@ public class Service_User implements IService_User {
     @Override
     public String rentCar() {
         if (tUser == null) return "请先登录";
-        Optional<Car> tCar = aCooperator.searchById(aScanner.nextInt());
+        System.out.println("下面是处于空闲状态的车辆");
+        System.out.println(iServiceCooperator.scanAllFree());
+        Optional<Car> tCar = iServiceCooperator.getByIdCar(aScanner.nextInt());
         try {
             //根据返回的Optional判断本车是否可以租用
             if (!tCar.isPresent()) return "本车Id不存在";
             //根据车辆的状态判断车辆是否可以租用
-            if (!tCar.get().getState().isFree()) return "本车不可租用！";
+            if (!tCar.get().getCState().isFree()) return "本车不可租用！";
             //根据用户是否有未归还的车辆判断是否可以租用此车
             if (!tUser.isUsing()) {
-                System.out.println("本车的ID为:" + tCar.get().getID());
+                System.out.println("本车的ID为:" + tCar.get().getId());
                 System.out.println("本车的使用价格为:" + tCar.get().getMoney());
                 System.out.println("是否使用?(Y/N)");
                 if (aScanner.next().charAt(0) != 'Y') {
                     return "返回主界面";
                 }
-                tCar.get().setState(Car.cState.USING);
+                tCar.get().setCState(Car.cStateEnum.USING);
                 tUser.setUsing(true);
+                iServiceAdmin
+                        .insertUserRecord(new Record(tUser.getId()
+                                , tCar.get().getId()
+                                , "Set"
+                                , null));
                 return "租用成功,本车信息为:" + tCar.get().toString();
             } else {
                 return new StringBuilder().append("发生错误,原因可能为:\n")
@@ -148,8 +164,9 @@ public class Service_User implements IService_User {
                         .toString();
             }
         } catch (Exception e) {
-            return "用户输入错误";
+            e.printStackTrace();
         }
+        return null;
     }
 
     @Override
@@ -158,15 +175,16 @@ public class Service_User implements IService_User {
         Optional<Car> tCar;
 
         try {
-            if (!(tCar = aCooperator.searchById(aScanner.nextInt())).isPresent()) return "查无此车";
-            if (tCar.get().getState() != Car.cState.USING) return "本车正在使用中,请重试";
-
+            System.out.println("请输入您要还的车的ID");
+            if (!(tCar = iServiceCooperator.getByIdCar(aScanner.nextInt())).isPresent()) return "查无此车";
+            if (!tCar.get().getCState().isUsing()) return "本车并非使用中,请重试";
             if (tUser.isUsing()) {
                 System.out.println("本车的使用费用为" + tCar.get().getMoney());
                 if (tUser.getMoney() >= tCar.get().getMoney()) {
                     tUser.setMoney(tUser.getMoney() - tCar.get().getMoney());
-                    tCar.get().setState(Car.cState.FREE);
+                    tCar.get().setCState(Car.cStateEnum.FREE);
                     tUser.setUsing(false);
+                    iServiceAdmin.updateUserRecord(tUser.getId());
                     return "使用费用已从用户账户中扣除,感谢您的使用";
                 } else {
                     return "您的账户余额不足，请先充值！";
@@ -181,13 +199,13 @@ public class Service_User implements IService_User {
     }
 
     @Override
-    public String requestForFixing() {
+    public String processFeedBack() {
         System.out.println("请输入您想要保修的车辆ID:");
         Optional<Car> tCar;
 
         try {
-            if ((tCar = aCooperator.searchById(aScanner.nextInt())).isPresent()) {
-                switch (tCar.get().getState()) {
+            if ((tCar = iServiceCooperator.getByIdCar(aScanner.nextInt())).isPresent()) {
+                switch (tCar.get().getCState()) {
                     case FIXING:
                         return "本车正在等待回收,请换乘其他车辆";
                     case TRASHED:
@@ -196,8 +214,8 @@ public class Service_User implements IService_User {
                     //无论是那种情况，都会返回报修
                     case USING:
                     case FREE:
-                        if (!tCar.get().isAskForFix())
-                            tCar.get().setAskForFix(true);
+                        tCar.get().setAskForFix(true);
+                        iServiceAdmin.userFeedBack(tCar.get());
                         return "本车已被报修,感谢您的反馈";
                 }
             }

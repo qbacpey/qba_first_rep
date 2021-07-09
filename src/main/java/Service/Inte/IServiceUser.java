@@ -1,6 +1,6 @@
 package Service.Inte;
 
-public interface IService_User extends IService{
+public interface IServiceUser extends IService{
 
     /*
      * 用户向账户中存钱
@@ -23,6 +23,7 @@ public interface IService_User extends IService{
      * 1.本车是否正在使用中，本车正在使用中就要求用户将此车归还
      * 2.本车是否存在
      */
-    String requestForFixing();
+    String processFeedBack();
+
 
 }

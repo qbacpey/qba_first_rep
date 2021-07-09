@@ -78,6 +78,10 @@ public class User {
         this.money = money;
     }
 
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     public User() {
     }
 
@@ -98,6 +102,8 @@ public class User {
                 .append(date).append('\"');
         sb.append(",\"money\":")
                 .append(money);
+        sb.append(",\"using\":")
+                .append(using);
         sb.append('}');
         return sb.toString();
     }
@@ -111,4 +117,6 @@ public class User {
         this.date = date;
         this.money = money;
     }
+
+
 }

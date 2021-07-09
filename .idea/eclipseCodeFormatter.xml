@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="EclipseCodeFormatterProjectSettings">
+    <option name="projectSpecificProfile">
+      <ProjectSpecificProfile>
+        <option name="configType" value="JAVA_CONVENTIONS" />
+        <option name="eclipseVersion" value="CUSTOM" />
+        <option name="formatOtherFileTypesWithIntelliJ" value="false" />
+        <option name="pathToEclipse" value="D:\Note-for-computer-technology\Java\Source\阿里巴巴-p3c-master\p3c-formatter\eclipse-codestyle.xml" />
+      </ProjectSpecificProfile>
+    </option>
+  </component>
+</project>

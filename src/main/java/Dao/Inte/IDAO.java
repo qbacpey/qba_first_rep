@@ -6,12 +6,12 @@ import java.util.Optional;
  * 还是说应该在切实被实现的接口上在加注释？
  */
 
-public interface IDao<T> {
+public interface IDAO<T> {
 
     /*
      * 根据给定的用户ID/车辆ID，删除指定对象
      */
-    String del(int ID);
+    String delete(int ID);
 
     /*
      *返回字符串，字符串所有车辆的数据
@@ -23,7 +23,7 @@ public interface IDao<T> {
      * 根据给定的用户ID/车辆ID，寻找指定对象
      * 利用Optional加泛型主要为了排除Null的情况
      */
-    Optional<T> search(int Id);
+    Optional<T> getById(int Id);
 
     /*
      * 将指定对象添加到Dao中

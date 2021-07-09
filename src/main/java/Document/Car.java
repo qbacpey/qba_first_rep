@@ -1,29 +1,37 @@
 package Document;
 
-public class Car {
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import java.io.Serializable;
+
+public class Car implements Serializable {
     //车辆ID
-    private int ID;
+    private int id;
     //投放日期
     private String date;
     //合作方
-    private Cooperator Cooperator;
+    @JsonDeserialize(as = Cooperator.class)
+    private Cooperator cooperator;
     //日租金
     private double money;
     //车辆状态
-    private cState state;
+    @JsonDeserialize(as = cStateEnum.class)
+    private cStateEnum cState;
     //枚举类，用来枚举车辆的四种状态
     private boolean askForFix;
 
-    public enum cState {
+
+    public enum cStateEnum {
         //空闲
-        FREE ("空闲"){
+        FREE("空闲") {
             @Override
             public boolean isFree() {
                 return true;
             }
         },
         //使用中
-        USING ("使用中"){
+        USING("使用中") {
             @Override
             public boolean isUsing() {
                 return true;
@@ -31,7 +39,7 @@ public class Car {
 
         },
         //维修中
-        FIXING ("维修中"){
+        FIXING("维修中") {
             @Override
             public boolean isFixing() {
                 return true;
@@ -39,13 +47,18 @@ public class Car {
 
         },
         //报废
-        TRASHED ("报废") {
+        TRASHED("报废") {
             @Override
             public boolean isTrashed() {
                 return true;
             }
 
         };
+
+        @JsonValue
+        public String getValue() {
+            return chinese;
+        }
 
         public String getChinese() {
             return chinese;
@@ -69,14 +82,17 @@ public class Car {
             return false;
         }
 
-        cState(String name) {
+        cStateEnum(String name) {
             chinese = name;
         }
 
+        public void setChinese(String chinese) {
+            this.chinese = chinese;
+        }
     }
 
-    public int getID() {
-        return ID;
+    public int getId() {
+        return id;
     }
 
     public boolean isAskForFix() {
@@ -91,46 +107,67 @@ public class Car {
         return date;
     }
 
-    public void setCooperate(Cooperator cooperate) {
-        this.Cooperator = cooperate;
-    }
-
     public void setMoney(double money) {
         this.money = money;
     }
 
-    public Cooperator getCooperate() {
-        return Cooperator;
+    public Cooperator getCooperator() {
+        return cooperator;
     }
 
     public double getMoney() {
         return money;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setCooperator(Cooperator cooperator) {
+        this.cooperator = cooperator;
+    }
+
     public void setDate(String date) {
         this.date = date;
     }
 
-    public cState getState() {
-        return state;
+    public cStateEnum getCState() {
+        return cState;
     }
 
-    public void setState(cState state) {
-        this.state = state;
+    public void setCState(cStateEnum state) {
+        this.cState = state;
     }
+
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"ID\":")
-                .append(ID);
+        sb.append("\"id\":")
+                .append(id);
         sb.append(",\"date\":\"")
                 .append(date).append('\"');
-        sb.append(",\"cooperate\":")
-                .append(Cooperator);
-        sb.append(",\"state\":")
-                .append(state);
+        sb.append(",\"cooperator\":")
+                .append(cooperator);
+        sb.append(",\"money\":")
+                .append(money);
+        sb.append(",\"cState\":")
+                .append(cState);
+        sb.append(",\"askForFix\":")
+                .append(askForFix);
         sb.append('}');
         return sb.toString();
+    }
+
+
+    public Car(int ID, String date, Cooperator cooperator, double money, cStateEnum state) {
+        this.id = ID;
+        this.date = date;
+        this.cooperator = cooperator;
+        this.money = money;
+        this.cState = state;
+    }
+
+    public Car() {
     }
 }

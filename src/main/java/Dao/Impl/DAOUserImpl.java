@@ -1,7 +1,7 @@
 package Dao.Impl;
 
-import Dao.Inte.IDao;
-import Document.Cooperator;
+import Dao.Inte.IDAO;
+import Document.User;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,40 +10,39 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Optional;
-/*
- * 这个类兼有管理者和客服
- */
 
-public class Dao_Cooperator implements IDao<Cooperator> {
+public class DAOUserImpl implements IDAO<User> {
     //用来储存录像带信息，利用save函数时刻保存到硬盘中
-    private static ArrayList<Cooperator> aData;
+    private static ArrayList<User> aData;
     private static ObjectMapper aObjectMapper = new ObjectMapper();
 
     //初始化内存数据库函数，用来导入本地JSON数据
     static {
         try {
             JavaType type = aObjectMapper.getTypeFactory().
-                    constructCollectionType(ArrayList.class, Cooperator.class);
-            aData = aObjectMapper.readValue(Paths.get("Cooperator.json").toFile(), type);
+                    constructCollectionType(ArrayList.class, User.class);
+            aData = aObjectMapper.readValue(Paths.get("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\User.json").toFile(), type);
         } catch (IOException e) {
-            aData = new ArrayList<Cooperator>();
+            aData = new ArrayList<User>();
         }
     }
 
-    private static IDao<Cooperator> aDao_Cooperator;
+    private static IDAO<User> aDAOUserImpl;
 
-    private Dao_Cooperator() {}
+    private DAOUserImpl(){}
 
-    public static IDao<Cooperator> get() {
-        if (aDao_Cooperator == null)
-            aDao_Cooperator = new Dao_Cooperator();
-        return aDao_Cooperator;
+    ;
+
+    public static IDAO<User> get() {
+        if (aDAOUserImpl == null)
+            aDAOUserImpl = new DAOUserImpl();
+        return aDAOUserImpl;
     }
 
     @Override
     public void saveData() {
         try {
-            aObjectMapper.writeValue(new File("Cooperator.json"), aData);
+            aObjectMapper.writeValue(new File("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\User.json"), aData);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,14 +51,14 @@ public class Dao_Cooperator implements IDao<Cooperator> {
     @Override
     public String scan() {
         return aData.stream()
-                .map(Cooperator::toString)
+                .map(User::toString)
                 .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
                 .toString();
     }
 
     @Override
-    public String del(int ID) {
-        Optional<Cooperator> t = this.search(ID);
+    public String delete(int ID) {
+        Optional<User> t = this.getById(ID);
         if (t.isPresent()) {
             aData.remove(t.get());
             saveData();
@@ -68,18 +67,14 @@ public class Dao_Cooperator implements IDao<Cooperator> {
         return "删除失败";
     }
 
-    /*
-     *根据输入的车ID寻找的管理者
-     */
     @Override
-    public Optional<Cooperator> search(int ID) {
-        return aData.stream()
-                .filter(e -> e.getID() == ID)
-                .findAny();
+    public Optional<User> getById(int Id) {
+        return aData.stream().filter(user -> user.getId() == Id).findAny();
     }
 
     @Override
-    public void add(Cooperator item) {
+    public void add(User item) {
         aData.add(item);
+        saveData();
     }
 }

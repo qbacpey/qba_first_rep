@@ -1,7 +1,5 @@
 package Document;
 
-import Dao.Inte.IDao;
-
 import java.util.Optional;
 
 public class Admin {

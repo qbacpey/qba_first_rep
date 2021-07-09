@@ -1,6 +1,6 @@
 package Dao.Impl;
 
-import Dao.Inte.IDao_Car;
+import Dao.Inte.IDAOCar;
 import Document.Car;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Dao_Car implements IDao_Car {
+public class DAOCarImpl implements IDAOCar {
     //用来储存未经分类的所有车的数据，利用save函数时刻保存到硬盘中
     private static ArrayList<Car> aData;
     //用来储存经过分类的所有车的数据
@@ -26,25 +26,25 @@ public class Dao_Car implements IDao_Car {
         try {
             JavaType type = aObjectMapper.getTypeFactory().
                     constructCollectionType(ArrayList.class, Car.class);
-            aData = aObjectMapper.readValue(Paths.get("Car.json").toFile(), type);
+            aData = aObjectMapper.readValue(Paths.get("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\Car.json").toFile(), type);
             aProcessedData = aData.stream()
-                    .collect(Collectors.groupingBy(car -> car.getCooperate().getName()
+                    .collect(Collectors.groupingBy(car -> car.getCooperator().getName()
                             , Collectors.toList()));
         } catch (IOException e) {
             aData = new ArrayList<Car>();
         }
     }
 
-    private static IDao_Car aDao_Car;
+    private static IDAOCar aDao_Car;
 
-    private Dao_Car() {
+    private DAOCarImpl() {
     }
 
     ;
 
-    public static IDao_Car get() {
+    public static IDAOCar get() {
         if (aDao_Car == null)
-            aDao_Car = new Dao_Car();
+            aDao_Car = new DAOCarImpl();
         return aDao_Car;
     }
 
@@ -52,7 +52,7 @@ public class Dao_Car implements IDao_Car {
     @Override
     public void saveData() {
         try {
-            aObjectMapper.writeValue(new File("Car.json"), aData);
+            aObjectMapper.writeValue(new File("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\Car.json"), aData);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,14 +63,14 @@ public class Dao_Car implements IDao_Car {
         return aData.stream()
                 .map(Car::toString)
                 .collect(StringBuilder::new
-                        , StringBuilder::append
+                        , (stringBuilder, s) -> stringBuilder.append(s + "\n")
                         , StringBuilder::append)
                 .toString();
     }
 
     @Override
-    public String del(int ID) {
-        Optional<Car> t = this.search(ID);
+    public String delete(int ID) {
+        Optional<Car> t = this.getById(ID);
         if (t.isPresent()) {
             aData.remove(t.get());
             saveData();
@@ -80,43 +80,44 @@ public class Dao_Car implements IDao_Car {
     }
 
     @Override
-    public Optional<Car> search(int Id) {
+    public Optional<Car> getById(int Id) {
         return aData.stream()
-                .filter(Car -> Car.getID() == Id)
+                .filter(Car -> Car.getId() == Id)
                 .findAny();
     }
 
     @Override
-    public List<Car> searchMatchCooWorker(String name) {
+    public List<Car> listCooperatorCars(String name) {
         return aProcessedData.get(name);
     }
 
     @Override
-    public Optional<Car> searchAnyMatchState(Car.cState state) {
+    public Optional<Car> getAnyMatchStateCar(Car.cStateEnum state) {
         return aData.stream()
-                .filter(e -> e.getState() == state)
+                .filter(e -> e.getCState() == state)
                 .findAny();
     }
 
     @Override
-    public List<Car> searchAllMatch(Car.cState state) {
+    public List<Car> listAllMatchStateCars(Car.cStateEnum state) {
         return aData.stream()
-                .filter(e -> e.getState() == state)
+                .filter(e -> e.getCState() == state)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void add(Car item) {
         aData.add(item);
+        saveData();
     }
 
 
     @Override
-    public String stateTable() {
-        Map<Car.cState, Long> temp = aData.stream()
-                .collect(Collectors.groupingBy(Car::getState, Collectors.counting()));
+    public String scanTotalStateTable() {
+        Map<Car.cStateEnum, Long> temp = aData.stream()
+                .collect(Collectors.groupingBy(Car::getCState, Collectors.counting()));
         StringBuilder temp1 = new StringBuilder();
-        for (Map.Entry<Car.cState, Long> qba : temp.entrySet()) {
+        for (Map.Entry<Car.cStateEnum, Long> qba : temp.entrySet()) {
             temp1.append(qba.getKey().getChinese() + "的单车数目为:" + qba.getValue());
         }
         return temp1.toString();

@@ -1,6 +1,8 @@
 package Document;
 
-public class Record {
+import java.io.Serializable;
+
+public class Record implements Serializable {
     //用户ID
     private int userID;
     //车ID
@@ -40,5 +42,30 @@ public class Record {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"userID\":")
+                .append(userID);
+        sb.append(",\"carID\":")
+                .append(carID);
+        sb.append(",\"startTime\":\"")
+                .append(startTime).append('\"');
+        sb.append(",\"endTime\":\"")
+                .append(endTime).append('\"');
+        sb.append('}');
+        return sb.toString();
+    }
+
+    public Record(int userID, int carID, String startTime, String endTime) {
+        this.userID = userID;
+        this.carID = carID;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public Record() {
     }
 }

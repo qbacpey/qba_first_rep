@@ -1,7 +1,6 @@
 package Dao.Impl;
 
-import Dao.Inte.IDao_Record;
-import Document.AskForFix;
+import Dao.Inte.IDAORecord;
 import Document.Record;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class Dao_Record implements IDao_Record {
+public class DAORecordImpl implements IDAORecord {
     //用来储存录像带信息，利用save函数时刻保存到硬盘中
     private static ArrayList<Record> aData_Use;
     private static ObjectMapper aObjectMapper = new ObjectMapper();
@@ -24,25 +23,25 @@ public class Dao_Record implements IDao_Record {
         try {
             JavaType type = aObjectMapper.getTypeFactory().
                     constructCollectionType(ArrayList.class, Record.class);
-            aData_Use = aObjectMapper.readValue(Paths.get("Record.json").toFile(), type);
+            aData_Use = aObjectMapper.readValue(Paths.get("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\Record.json").toFile(), type);
         } catch (IOException e) {
             aData_Use = new ArrayList<Record>();
         }
     }
 
-    private static IDao_Record aDao_Record;
-    private Dao_Record(){};
+    private static IDAORecord aDao_Record;
+    private DAORecordImpl(){};
 
-    public static IDao_Record get(){
+    public static IDAORecord get(){
         if (aDao_Record==null)
-            aDao_Record = new Dao_Record();
+            aDao_Record = new DAORecordImpl();
         return aDao_Record;
     }
 
     @Override
     public void saveData() {
         try {
-            aObjectMapper.writeValue(new File("Record.json"), aData_Use);
+            aObjectMapper.writeValue(new File("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\Record.json"), aData_Use);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,13 +51,15 @@ public class Dao_Record implements IDao_Record {
     public String scan() {
         return aData_Use.stream()
                 .map(Record::toString)
-                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .collect(StringBuilder::new
+                        , (stringBuilder, s) -> stringBuilder.append(s+"\n")
+                        , StringBuilder::append)
                 .toString();
     }
 
     @Override
-    public String del(int ID) {
-        Optional<Record> t = this.search(ID);
+    public String delete(int ID) {
+        Optional<Record> t = this.getById(ID);
         if (t.isPresent()) {
             aData_Use.remove(t.get());
             saveData();
@@ -71,21 +72,21 @@ public class Dao_Record implements IDao_Record {
      * 相比于找到全部用户，这个search找到一个记录就行了
      */
     @Override
-    public Optional<Record> search(int UserId) {
+    public Optional<Record> getById(int UserId) {
         return aData_Use.stream()
                 .filter(Record -> Record.getUserID() == UserId)
                 .findAny();
     }
 
     @Override
-    public List<Record> searchAllUserRecord(int UserId) {
+    public List<Record> listUserRecords(int UserId) {
         return aData_Use.stream()
                 .filter(Record -> Record.getUserID() == UserId)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Record> searchAllCarRecord(int CarId) {
+    public List<Record> listCarRecords(int CarId) {
         return aData_Use.stream()
                 .filter(Record -> Record.getCarID() == CarId)
                 .collect(Collectors.toList());
@@ -95,5 +96,6 @@ public class Dao_Record implements IDao_Record {
     @Override
     public void add(Record item) {
         aData_Use.add(item);
+        saveData();
     }
 }
