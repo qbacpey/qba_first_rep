@@ -1,16 +1,13 @@
 package Service.Impl;
 
-import Dao.Impl.DAOCarImpl;
-import Dao.Impl.DAOCooperatorImpl;
-import Dao.Impl.DAOFixImpl;
-import Dao.Impl.DAORecordImpl;
+import Dao.Impl.*;
 import Dao.Inte.IDAO;
 import Dao.Inte.IDAOCar;
 import Dao.Inte.IDAOFix;
 import Dao.Inte.IDAORecord;
-import Document.AskForFix;
-import Document.Car;
-import Document.Cooperator;
+import DOJO.AskForFix;
+import DOJO.Car;
+import DOJO.Member.Cooperator;
 import Service.Inte.IServiceCooperator;
 
 import java.util.*;
@@ -44,14 +41,7 @@ public class ServiceCooperatorImpl implements IServiceCooperator {
         aScanner = new Scanner(System.in);
         aCar_List = DAOCarImpl.get();
         aRecord_List = DAORecordImpl.get();
-        aCooperator_List = DAOCooperatorImpl.get();
-        aFix_List = DAOFixImpl.get();
-    }
-
-    private static void freshService() {
-        aCar_List = DAOCarImpl.get();
-        aRecord_List = DAORecordImpl.get();
-        aCooperator_List = DAOCooperatorImpl.get();
+        aCooperator_List = new DAOMemberImpl<Cooperator>("Cooperator", Cooperator.class);
         aFix_List = DAOFixImpl.get();
     }
 
@@ -187,7 +177,6 @@ public class ServiceCooperatorImpl implements IServiceCooperator {
     @Override
     public String pushCar() {
         if (tCoop == null) System.out.println("请先登录");
-        freshService();
         System.out.println("请更新您要推送的车的数目:");
         try {
             int tChoice = aScanner.nextInt();
@@ -206,12 +195,11 @@ public class ServiceCooperatorImpl implements IServiceCooperator {
                 while (aCar_List.getById(tID).isPresent())
                     tID = (int) (Math.random() * 1000);
                 System.out.print("请输入本车租金:");
-                Car tCat = new Car(tID, null, tCoop, aScanner.nextDouble(), Car.cStateEnum.FREE);
+                Car tCat = new Car(tID, null, tCoop, aScanner.nextDouble(), Car.cStateEnum.FREE,false);
                 System.out.println(tCat);
                 aCar_List.add(tCat);
             }
             freeCar = freeCar + tChoice;
-            freshService();
             return "您现在已经投放了" + freeCar + "辆车";
         } catch (Exception e) {
             return e.getMessage();
@@ -268,7 +256,6 @@ public class ServiceCooperatorImpl implements IServiceCooperator {
                         break;
                 }
             }
-            freshService();
             System.out.println("所有用户报修已被处理!");
         } catch (Exception e) {
             e.printStackTrace();
@@ -286,8 +273,6 @@ public class ServiceCooperatorImpl implements IServiceCooperator {
             System.out.println("名下没有车辆");
             return;
         }
-
-
         List<Car> tCarList = aCarList.stream()
                 .filter(Car::isAskForFix)
                 .filter(car -> car.getCooperator().getId()==tCoop.getId())
@@ -326,7 +311,6 @@ public class ServiceCooperatorImpl implements IServiceCooperator {
                         break;
                 }
             }
-            freshService();
             System.out.println("所有正在修理中的车辆已被处理!");
         } catch (Exception e) {
             e.printStackTrace();

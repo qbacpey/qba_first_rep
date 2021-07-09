@@ -1,8 +1,8 @@
-package Document;
+package DOJO.Member;
 
-import java.util.Optional;
+import java.io.Serializable;
 
-public class Admin {
+public class Admin extends AbstractMember implements Serializable {
     private String name;
     private String password;
     private int ID;

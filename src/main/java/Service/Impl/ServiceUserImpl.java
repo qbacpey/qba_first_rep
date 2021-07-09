@@ -1,10 +1,10 @@
 package Service.Impl;
 
-import Dao.Impl.DAOUserImpl;
+import Dao.Impl.DAOMemberImpl;
 import Dao.Inte.IDAO;
-import Document.Car;
-import Document.Record;
-import Document.User;
+import DOJO.Car;
+import DOJO.Record;
+import DOJO.Member.User;
 import Service.Inte.IServiceAdmin;
 import Service.Inte.IServiceCooperator;
 import Service.Inte.IServiceUser;
@@ -31,7 +31,7 @@ public class ServiceUserImpl implements IServiceUser {
 
 
     static {
-        userIDAO = DAOUserImpl.get();
+        userIDAO = new DAOMemberImpl<User>("User",User.class);
         iServiceCooperator = ServiceCooperatorImpl.get();
         aScanner = new Scanner(System.in);
         iServiceAdmin = ServiceAdminImpl.get();

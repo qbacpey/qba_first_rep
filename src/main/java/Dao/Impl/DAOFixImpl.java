@@ -1,8 +1,8 @@
 package Dao.Impl;
 
 import Dao.Inte.IDAOFix;
-import Document.AskForFix;
-import Document.Car;
+import DOJO.AskForFix;
+import DOJO.Car;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,7 +27,7 @@ public class DAOFixImpl implements IDAOFix {
         try {
             JavaType type = aObjectMapper.getTypeFactory().
                     constructCollectionType(ArrayList.class, AskForFix.class);
-            aData = aObjectMapper.readValue(Paths.get("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\AskForFix.json").toFile(), type);
+            aData = aObjectMapper.readValue(Paths.get("src/main/resources/AskForFix.json").toFile(), type);
         } catch (IOException e) {
             aData = new ArrayList<AskForFix>();
         }
@@ -50,7 +50,7 @@ public class DAOFixImpl implements IDAOFix {
     @Override
     public void saveData() {
         try {
-            aObjectMapper.writeValue(new File("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\AskForFix.json"), aData);
+            aObjectMapper.writeValue(new File("src/main/resources/AskForFix.json"), aData);
         } catch (IOException e) {
             e.printStackTrace();
         }

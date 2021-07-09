@@ -1,6 +1,6 @@
 package Dao.Inte;
 
-import Document.Record;
+import DOJO.Record;
 
 import java.util.List;
 

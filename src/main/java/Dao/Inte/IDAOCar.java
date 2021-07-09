@@ -1,6 +1,6 @@
 package Dao.Inte;
 
-import Document.Car;
+import DOJO.Car;
 
 import java.util.List;
 import java.util.Optional;

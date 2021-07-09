@@ -1,4 +1,4 @@
-package Document;
+package DOJO;
 
 import java.io.Serializable;
 

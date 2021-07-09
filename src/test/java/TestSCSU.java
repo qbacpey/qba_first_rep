@@ -13,15 +13,9 @@ public class TestSCSU {
     public static void main(String[] args) {
         TestSCSU TSC = new TestSCSU();
         while (true){
-            testService_Admin.scanAllMessage();
-            System.out.println("合作方");
-            System.out.println(testService_Cooperator.login());
-            System.out.println(testService_Cooperator.scan());
-            System.out.println(testService_Cooperator.pushCar());
-            testService_Cooperator.processFeedBack();
-            testService_Cooperator.processFixing();
             System.out.println("用户注册");
             System.out.println(testService_User.register());
+            testService_Admin.scanAllMessage();
             System.out.println("用户登录");
             System.out.println(testService_User.login());
             System.out.println("用户存钱");

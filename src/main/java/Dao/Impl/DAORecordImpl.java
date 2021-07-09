@@ -1,7 +1,7 @@
 package Dao.Impl;
 
 import Dao.Inte.IDAORecord;
-import Document.Record;
+import DOJO.Record;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,7 +23,7 @@ public class DAORecordImpl implements IDAORecord {
         try {
             JavaType type = aObjectMapper.getTypeFactory().
                     constructCollectionType(ArrayList.class, Record.class);
-            aData_Use = aObjectMapper.readValue(Paths.get("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\Record.json").toFile(), type);
+            aData_Use = aObjectMapper.readValue(Paths.get("src/main/resources/Record.json").toFile(), type);
         } catch (IOException e) {
             aData_Use = new ArrayList<Record>();
         }
@@ -41,7 +41,7 @@ public class DAORecordImpl implements IDAORecord {
     @Override
     public void saveData() {
         try {
-            aObjectMapper.writeValue(new File("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\Record.json"), aData_Use);
+            aObjectMapper.writeValue(new File("src/main/resources/Record.json"), aData_Use);
         } catch (IOException e) {
             e.printStackTrace();
         }

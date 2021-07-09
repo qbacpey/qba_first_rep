@@ -1,7 +1,7 @@
 package Dao.Impl;
 
 import Dao.Inte.IDAOCar;
-import Document.Car;
+import DOJO.Car;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,7 +26,7 @@ public class DAOCarImpl implements IDAOCar {
         try {
             JavaType type = aObjectMapper.getTypeFactory().
                     constructCollectionType(ArrayList.class, Car.class);
-            aData = aObjectMapper.readValue(Paths.get("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\Car.json").toFile(), type);
+            aData = aObjectMapper.readValue(Paths.get("src/main/resources/Car.json").toFile(), type);
             aProcessedData = aData.stream()
                     .collect(Collectors.groupingBy(car -> car.getCooperator().getName()
                             , Collectors.toList()));
@@ -52,7 +52,7 @@ public class DAOCarImpl implements IDAOCar {
     @Override
     public void saveData() {
         try {
-            aObjectMapper.writeValue(new File("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\Car.json"), aData);
+            aObjectMapper.writeValue(new File("src/main/resources/Car.json"), aData);
         } catch (IOException e) {
             e.printStackTrace();
         }

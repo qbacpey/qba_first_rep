@@ -1,7 +1,7 @@
 package Dao.Inte;
 
-import Document.AskForFix;
-import Document.Car;
+import DOJO.AskForFix;
+import DOJO.Car;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package Dao.Impl;
 
+import DOJO.Member.AbstractMember;
 import Dao.Inte.IDAO;
-import Document.User;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,39 +10,45 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Properties;
 
-public class DAOUserImpl implements IDAO<User> {
+public class DAOMemberImpl<T extends AbstractMember> implements IDAO<T> {
     //用来储存录像带信息，利用save函数时刻保存到硬盘中
-    private static ArrayList<User> aData;
-    private static ObjectMapper aObjectMapper = new ObjectMapper();
+    private ArrayList<T> aData;
+    private ObjectMapper aObjectMapper = new ObjectMapper();
+    private static final String config = "src/main/resources/Member.properties";
+    private String dataType;
+    Properties props;
+    Class<T> qba;
 
-    //初始化内存数据库函数，用来导入本地JSON数据
-    static {
+   /*
+    * 根据传入的
+    */
+    private void init() {
         try {
+            props = new Properties();
+            props.load(new java.io.FileInputStream(config));
+            System.out.println();
             JavaType type = aObjectMapper.getTypeFactory().
-                    constructCollectionType(ArrayList.class, User.class);
-            aData = aObjectMapper.readValue(Paths.get("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\User.json").toFile(), type);
+                    constructCollectionType(ArrayList.class, qba);
+            aData = aObjectMapper.readValue(Paths.get(props.getProperty(dataType)).toFile(), type);
         } catch (IOException e) {
-            aData = new ArrayList<User>();
+            aData = new ArrayList<T>();
         }
     }
 
-    private static IDAO<User> aDAOUserImpl;
-
-    private DAOUserImpl(){}
+    public DAOMemberImpl(String dataType,Class<T> qba) {
+        this.dataType = dataType;
+        this.qba = qba;
+        init();
+    }
 
     ;
-
-    public static IDAO<User> get() {
-        if (aDAOUserImpl == null)
-            aDAOUserImpl = new DAOUserImpl();
-        return aDAOUserImpl;
-    }
 
     @Override
     public void saveData() {
         try {
-            aObjectMapper.writeValue(new File("D:\\Note-for-computer-technology\\Java\\JAVAfx_Myself\\Bike\\src\\main\\resources\\User.json"), aData);
+            aObjectMapper.writeValue(new File(props.getProperty(dataType)), aData);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,14 +57,14 @@ public class DAOUserImpl implements IDAO<User> {
     @Override
     public String scan() {
         return aData.stream()
-                .map(User::toString)
+                .map(T::toString)
                 .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
                 .toString();
     }
 
     @Override
     public String delete(int ID) {
-        Optional<User> t = this.getById(ID);
+        Optional<T> t = this.getById(ID);
         if (t.isPresent()) {
             aData.remove(t.get());
             saveData();
@@ -68,12 +74,12 @@ public class DAOUserImpl implements IDAO<User> {
     }
 
     @Override
-    public Optional<User> getById(int Id) {
+    public Optional<T> getById(int Id) {
         return aData.stream().filter(user -> user.getId() == Id).findAny();
     }
 
     @Override
-    public void add(User item) {
+    public void add(T item) {
         aData.add(item);
         saveData();
     }

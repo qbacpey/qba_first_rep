@@ -1,6 +1,6 @@
-package Document;
+package DOJO.Member;
 
-public class User {
+public class User extends AbstractMember {
     //用户ID
     private int id;
     //用户姓名

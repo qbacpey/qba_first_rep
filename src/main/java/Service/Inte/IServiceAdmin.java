@@ -1,7 +1,7 @@
 package Service.Inte;
 
-import Document.Car;
-import Document.Record;
+import DOJO.Car;
+import DOJO.Record;
 
 import java.util.Optional;
 

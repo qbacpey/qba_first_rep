@@ -1,15 +1,15 @@
 package Service.Impl;
 
-import Document.Admin;
+import DOJO.Member.Admin;
 import Dao.Impl.*;
 import Dao.Inte.IDAO;
 import Dao.Inte.IDAOCar;
 import Dao.Inte.IDAOFix;
 import Dao.Inte.IDAORecord;
-import Document.Cooperator;
-import Document.User;
-import Document.Car;
-import Document.Record;
+import DOJO.Member.Cooperator;
+import DOJO.Member.User;
+import DOJO.Car;
+import DOJO.Record;
 import Service.Inte.IServiceAdmin;
 
 import java.util.Optional;
@@ -30,8 +30,8 @@ public class ServiceAdminImpl implements IServiceAdmin {
         iDaoFix = DAOFixImpl.get();
         iDao_record = DAORecordImpl.get();
         iDao_car = DAOCarImpl.get();
-        cooperatorIDAO = DAOCooperatorImpl.get();
-        userIDAO = DAOUserImpl.get();
+        cooperatorIDAO = new DAOMemberImpl<Cooperator>("Cooperator", Cooperator.class);
+        userIDAO = new DAOMemberImpl<User>("User", User.class);
     }
 
     //所有的get,set方法

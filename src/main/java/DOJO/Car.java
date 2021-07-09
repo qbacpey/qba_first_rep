@@ -1,5 +1,6 @@
-package Document;
+package DOJO;
 
+import DOJO.Member.Cooperator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -91,8 +92,56 @@ public class Car implements Serializable {
         }
     }
 
+    public Car() {
+    }
+
+    public Car(int id, String date, Cooperator cooperator, double money, cStateEnum cState, boolean askForFix) {
+        this.id = id;
+        this.date = date;
+        this.cooperator = cooperator;
+        this.money = money;
+        this.cState = cState;
+        this.askForFix = askForFix;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public Cooperator getCooperator() {
+        return cooperator;
+    }
+
+    public void setCooperator(Cooperator cooperator) {
+        this.cooperator = cooperator;
+    }
+
+    public double getMoney() {
+        return money;
+    }
+
+    public void setMoney(double money) {
+        this.money = money;
+    }
+
+    public cStateEnum getCState() {
+        return cState;
+    }
+
+    public void setCState(cStateEnum cState) {
+        this.cState = cState;
     }
 
     public boolean isAskForFix() {
@@ -102,43 +151,6 @@ public class Car implements Serializable {
     public void setAskForFix(boolean askForFix) {
         this.askForFix = askForFix;
     }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setMoney(double money) {
-        this.money = money;
-    }
-
-    public Cooperator getCooperator() {
-        return cooperator;
-    }
-
-    public double getMoney() {
-        return money;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setCooperator(Cooperator cooperator) {
-        this.cooperator = cooperator;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public cStateEnum getCState() {
-        return cState;
-    }
-
-    public void setCState(cStateEnum state) {
-        this.cState = state;
-    }
-
 
     @Override
     public String toString() {
@@ -157,17 +169,5 @@ public class Car implements Serializable {
                 .append(askForFix);
         sb.append('}');
         return sb.toString();
-    }
-
-
-    public Car(int ID, String date, Cooperator cooperator, double money, cStateEnum state) {
-        this.id = ID;
-        this.date = date;
-        this.cooperator = cooperator;
-        this.money = money;
-        this.cState = state;
-    }
-
-    public Car() {
     }
 }
